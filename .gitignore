@@ -1,0 +1,28 @@
+# Virtual environments
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Data
+data/
+*.zip
+*.csv
+*.tsv
+
+# Model and Results
+model/
+results/
+plots/
+logs/
+*.pt
+*.bin
+*.pth
+benchmark_results_metrics.json
+
+# Tests
+.pytest_cache/
+
+# OS files
+.DS_Store
