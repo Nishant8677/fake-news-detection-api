@@ -1,12 +1,23 @@
+# Core service
 fastapi
 uvicorn
+pydantic
+
+# Model / inference
+torch
+transformers
+
+# Data + metrics
 pandas
 numpy
 scikit-learn
 joblib
-pydantic
-transformers
+
+# Plotting (evaluation only)
 matplotlib
 seaborn
+
+# Benchmarking + testing
 psutil
 httpx
+pytest
