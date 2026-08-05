@@ -58,6 +58,34 @@ python benchmark.py
 - Throughput (req/sec)
 - CPU, Peak RAM, Model Size & Load Time
 
+### Measured results
+
+All figures below are committed in [`results/`](results/) and reproduced by
+`python benchmark.py`. Full methodology and environment: [BENCHMARK.md](BENCHMARK.md).
+
+**Model quality** — 6-class LIAR, n=1267 test claims:
+
+| Metric | Value |
+|---|---|
+| Accuracy | **0.2573** |
+| Macro F1 | 0.2601 |
+| Weighted F1 | 0.2553 |
+
+Random chance on a balanced 6-way task is 0.167. Per-class F1 ranges from 0.19
+(`mostly-true`) to 0.31 (`pants-fire`). See [`results/classification_report.txt`](results/classification_report.txt).
+
+**Serving performance:**
+
+| Metric | Value |
+|---|---|
+| Average latency | 8.5 ms |
+| P95 latency | 12.8 ms |
+| Batch throughput | 396.5 req/s |
+| Single-request throughput | 117.9 req/s |
+| Cold-start model load | 0.67 s |
+| Model size on disk | 418.4 MB |
+| Peak memory | 1344.3 MB |
+
 See [docs/benchmark.md](docs/benchmark.md) for details on our evaluation methodology.
 
 ## 🌐 API Deployment
@@ -68,9 +96,29 @@ The model is deployed via a FastAPI REST endpoint that accepts text and returns 
 uvicorn inference.app:app --reload
 ```
 
+Or with Docker (model weights are mounted, not baked into the image):
+
+```bash
+docker build -t fake-news-api .
+docker run -v $(pwd)/model:/app/model -p 8000:8000 fake-news-api
+```
+
 ## ⚠️ Limitations & Realities of the Task
 
-Multi-class political fact-checking is significantly harder than binary fake news classification. Label ambiguity (e.g., distinguishing `barely-true` from `half-true`) means that accuracy metrics will be naturally lower than highly separable binary datasets. This project focuses on **engineering robustness** rather than chasing artificial 99% accuracy scores.
+The headline number for this project is **25.7% accuracy**, and it is stated up front
+deliberately.
+
+Multi-class political fact-checking is substantially harder than binary fake-news
+classification. Distinguishing `barely-true` from `half-true` is a judgement call that
+annotators themselves disagree on, and the fine-grained 6-way LIAR task is known to sit
+far below what people expect from a BERT fine-tune. A model at 25.7% is above the 16.7%
+chance floor but is **not fit for any real fact-checking use**, and nothing here claims
+otherwise.
+
+What this project is actually about is the **serving layer**: containerised deployment,
+sub-13 ms P95 latency, batch throughput, confidence-scored responses, structured logging,
+and a benchmark harness whose output is committed rather than described. The model's
+ceiling is set by the dataset; the engineering around it is the work.
 
 ## 🛠️ Tech Stack
 - **Deep Learning:** PyTorch, HuggingFace Transformers
