@@ -1,0 +1,28 @@
+{
+    "Classification_Metrics": {
+        "Accuracy": 0.2573,
+        "Macro_Precision": 0.2634,
+        "Macro_Recall": 0.2616,
+        "Macro_F1": 0.2601,
+        "Weighted_Precision": 0.2588,
+        "Weighted_Recall": 0.2573,
+        "Weighted_F1": 0.2553
+    },
+    "Inference_Performance": {
+        "Warmup_Time_s": 0.1217,
+        "Average_Latency_s": 0.0085,
+        "Median_Latency_s": 0.0076,
+        "P95_Latency_s": 0.0128,
+        "Throughput_req_per_s": 117.91,
+        "Model_Loading_Time_s": 0.6709
+    },
+    "Batch_Inference_Performance": {
+        "Batch_Throughput_req_per_s": 396.48
+    },
+    "System_Performance": {
+        "Model_Size_MB": 418.36,
+        "Memory_Usage_MB": 1007.54,
+        "CPU_Usage_Percent": 3.0,
+        "Peak_Memory_Usage_MB": 1344.34
+    }
+}

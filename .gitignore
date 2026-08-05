@@ -5,21 +5,19 @@ env/
 __pycache__/
 *.pyc
 
-# Data
+# Large artifacts — not committed
 data/
-*.zip
-*.csv
-*.tsv
-
-# Model and Results
 model/
-results/
-plots/
 logs/
+*.zip
 *.pt
 *.bin
 *.pth
-benchmark_results_metrics.json
+*.safetensors
+
+# Evaluation evidence IS committed — see BENCHMARK.md
+!results/
+!plots/
 
 # Tests
 .pytest_cache/
