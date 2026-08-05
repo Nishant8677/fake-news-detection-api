@@ -1,15 +1,19 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import pandas as pd
-from datetime import datetime
 import os
 import uuid
-import json
+from datetime import datetime
+
+import pandas as pd
+import torch
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 # ---------------- CONFIG ----------------
-MODEL_DIR = "model"                  # Folder with model.safetensors, config.json, tokenizer files
+# Folder with model.safetensors, config.json, tokenizer files. Read from the
+# environment so the container can point at the mounted volume; "model" is the
+# right default when running from the repo root.
+MODEL_DIR = os.getenv("MODEL_DIR", "model")
 DATASET_VERSION = "v1.0-liar"
 LOG_FILE = "logs/predictions.csv"
 CONFIDENCE_THRESHOLD = 0.4           # Lowered for 6-class problem
@@ -65,6 +69,24 @@ def log_prediction(text, label, confidence, needs_review, request_id):
     else:
         df.to_csv(LOG_FILE, index=False)
 # ---------------------------------------------
+
+# ---------------- HEALTH ENDPOINT ----------------
+@app.get("/health")
+def health():
+    """Liveness/readiness probe used by the container HEALTHCHECK.
+
+    Returns 503 when the weights are absent: the process is up but cannot
+    serve a prediction, which is the failure worth surfacing since the model
+    is mounted at runtime rather than baked into the image.
+    """
+    if MODEL_LOADED:
+        return {"status": "ok", "model_loaded": True, "dataset_version": DATASET_VERSION}
+
+    return JSONResponse(
+        status_code=503,
+        content={"status": "degraded", "model_loaded": False, "dataset_version": DATASET_VERSION},
+    )
+# -------------------------------------------------
 
 # ---------------- INFERENCE ENDPOINT ----------------
 @app.post("/predict")
