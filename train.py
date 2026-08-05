@@ -1,11 +1,12 @@
-import os
 import json
-import torch
-import pandas as pd
-from transformers import BertTokenizer, BertForSequenceClassification
-from torch.utils.data import Dataset, DataLoader
-from torch.optim import AdamW
+import os
+
 import matplotlib.pyplot as plt
+import pandas as pd
+import torch
+from torch.optim import AdamW
+from torch.utils.data import DataLoader, Dataset
+from transformers import BertForSequenceClassification, BertTokenizer
 
 # ---------------- CONFIG ----------------
 TRAIN_DATA = "data/processed/train_processed.csv"
@@ -75,7 +76,7 @@ def main():
         
     print("Loading datasets...")
     if not os.path.exists(TRAIN_DATA) or not os.path.exists(VALID_DATA):
-        print(f"Error: Processed data not found. Run preprocess.py first.")
+        print("Error: Processed data not found. Run preprocess.py first.")
         return
         
     train_df = pd.read_csv(TRAIN_DATA)

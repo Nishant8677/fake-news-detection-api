@@ -1,0 +1,31 @@
+[project]
+name = "fake-news-detection-api"
+version = "1.0.0"
+description = "6-class LIAR claim classifier served over FastAPI."
+requires-python = ">=3.11"
+
+# Runtime dependencies live in requirements.txt, which is what the README,
+# the Dockerfile and CI install. They are not duplicated here.
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["fake_news_project", "model", "data"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle
+    "F",    # pyflakes
+    "I",    # import sorting
+    "UP",   # pyupgrade
+    "B",    # bugbear
+    "SIM",  # simplify
+]
+ignore = [
+    "E501",  # line length is handled by the formatter
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"

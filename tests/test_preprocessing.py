@@ -1,5 +1,5 @@
-import pytest
 from preprocess import LABEL_MAP
+
 
 def test_label_mapping():
     assert LABEL_MAP["pants-fire"] == 0

@@ -1,7 +1,7 @@
-import pytest
 import os
-import json
+
 from evaluation import evaluate_predictions
+
 
 def test_metrics_generation():
     y_true = [0, 1, 2, 3, 4, 5, 0, 1]

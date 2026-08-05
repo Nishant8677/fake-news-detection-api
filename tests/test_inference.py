@@ -1,4 +1,3 @@
-import pytest
 
 def test_inference_logic():
     # Placeholder for checking inference shapes and logic

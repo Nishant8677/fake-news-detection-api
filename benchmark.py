@@ -1,11 +1,12 @@
+import json
 import os
 import time
-import json
-import psutil
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+import psutil
 import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 # Import from the repository
 from evaluation import evaluate_predictions
@@ -18,7 +19,7 @@ def get_dir_size(path="."):
     total = 0
     if not os.path.exists(path):
         return 0
-    for dirpath, dirnames, filenames in os.walk(path):
+    for dirpath, _dirnames, filenames in os.walk(path):
         for f in filenames:
             fp = os.path.join(dirpath, f)
             if not os.path.islink(fp):
@@ -96,7 +97,11 @@ def benchmark_batch_inference(df, model, tokenizer, device, batch_size=32):
         inputs = tokenizer(batch_texts, return_tensors="pt", truncation=True, padding=True, max_length=64).to(device)
         with torch.no_grad():
             outputs = model(**inputs)
-            probs = torch.softmax(outputs.logits, dim=1)
+            # The result is not consumed here, but /predict runs this softmax on
+            # every request, so it stays inside the timed region. Dropping it
+            # would inflate the throughput figure by timing less work than the
+            # API actually does.
+            _ = torch.softmax(outputs.logits, dim=1)
     end_total = time.time()
     
     throughput = len(texts) / (end_total - start_total) if len(texts) > 0 else 0
