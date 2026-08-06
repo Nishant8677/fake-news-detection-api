@@ -1,23 +1,36 @@
+# Pinned to the environment the benchmarks in BENCHMARK.md were measured on.
+#
+# These were unpinned until now, and the drift was not theoretical: a clean
+# install three weeks after the benchmark run resolved torch 2.13.0 and
+# transformers 5.14.1 against the 2.10.0 / 5.2.0 the latency figures were taken
+# on. Unpinned, the file installs an environment the documentation does not
+# describe, which makes every number in BENCHMARK.md unreproducible.
+#
+# torch is pinned without a local build tag so the pin stays installable from
+# PyPI. On Windows those wheels are already CPU-only; the Dockerfile pulls the
+# CPU build explicitly via --index-url for the Linux image. Verified as
+# torch 2.10.0+cpu with torch.cuda.is_available() == False.
+
 # Core service
-fastapi
-uvicorn
-pydantic
+fastapi==0.129.0
+uvicorn==0.41.0
+pydantic==2.12.5
 
 # Model / inference
-torch
-transformers
+torch==2.10.0
+transformers==5.2.0
 
 # Data + metrics
-pandas
-numpy
-scikit-learn
-joblib
+pandas==3.0.1
+numpy==2.4.2
+scikit-learn==1.8.0
+joblib==1.5.3
 
 # Plotting (evaluation only)
-matplotlib
-seaborn
+matplotlib==3.11.0
+seaborn==0.13.2
 
 # Benchmarking + testing
-psutil
-httpx
-pytest
+psutil==7.2.2
+httpx==0.28.1
+pytest==9.1.1
