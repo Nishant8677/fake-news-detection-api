@@ -1,7 +1,11 @@
 import json
 import os
 
-import matplotlib.pyplot as plt
+import matplotlib
+
+matplotlib.use("Agg")  # training plots are saved, never shown
+
+import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd
 import torch
 from torch.optim import AdamW
