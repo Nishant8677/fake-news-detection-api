@@ -103,6 +103,31 @@ docker build -t fake-news-api .
 docker run -v $(pwd)/model:/app/model -p 8000:8000 fake-news-api
 ```
 
+Interactive docs are at `http://localhost:8000/docs`.
+
+### Example session
+
+Real output from a running server, not illustrative:
+
+```console
+$ curl -s http://localhost:8000/health
+{"status":"ok","model_loaded":true,"dataset_version":"v1.0-liar"}
+
+$ curl -s -X POST http://localhost:8000/predict \
+      -H "Content-Type: application/json" \
+      -d '{"text": "Our state has the lowest unemployment rate in the entire country."}'
+{"request_id":"ac2b3199-c8af-4289-930d-985bd77a6cb7","prediction":"mostly-true",
+ "confidence":0.5455,"dataset_version":"v1.0-liar","needs_review":false,
+ "timestamp":"2026-08-06T11:28:43.342496"}
+```
+
+`needs_review` flags any prediction below a 0.4 confidence threshold. `/health`
+returns `503` with `"status": "degraded"` when the weights are not mounted, which
+is what the container healthcheck polls.
+
+> The label is the model's, not an endorsement. At 25.7% accuracy it is wrong far
+> more often than it is right — see the Limitations section below.
+
 ## ⚠️ Limitations & Realities of the Task
 
 The headline number for this project is **25.7% accuracy**, and it is stated up front
