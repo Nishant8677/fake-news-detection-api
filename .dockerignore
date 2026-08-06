@@ -1,0 +1,19 @@
+.git/
+__pycache__/
+*.pyc
+.venv/
+venv/
+data/
+plots/
+logs/
+results/
+# 419 MB of weights. Never copied into the image (they are mounted at runtime),
+# but without this line they are still uploaded to the daemon as build context
+# on every build.
+model/
+*.zip
+fake_news_project/
+fake_news_project_colab.zip
+trained_results.zip
+tests/
+docs/
