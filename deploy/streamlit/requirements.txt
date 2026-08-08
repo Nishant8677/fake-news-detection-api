@@ -1,0 +1,21 @@
+# Streamlit Community Cloud reads a requirements file from either the repository
+# root or the app entrypoint's directory. It lives here so the root file stays
+# exactly the environment BENCHMARK.md was measured on, with no UI dependency
+# mixed into the serving stack.
+#
+# The serving packages below are pinned to that benchmarked environment; the UI
+# layer is not, for the same reason as the Space: over-constraining a large
+# dependency tree breaks installs without making any measurement more
+# reproducible.
+
+fastapi==0.129.0
+pydantic==2.12.5
+
+torch==2.10.0
+transformers==5.2.0
+
+pandas==3.0.1
+numpy==2.4.2
+
+streamlit>=1.40
+psutil>=5.9

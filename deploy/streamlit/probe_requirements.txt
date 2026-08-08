@@ -1,0 +1,4 @@
+# Probe only. Deliberately minimal: the probe must start even where the real
+# service would not, or it cannot report why.
+streamlit>=1.40
+psutil>=5.9
