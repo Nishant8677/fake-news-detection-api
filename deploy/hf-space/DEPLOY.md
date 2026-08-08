@@ -6,10 +6,14 @@ belong in a Space's git history any more than they belong in this one's.
 
 Run these yourself — the token should not pass through a terminal you do not own.
 
+> Commands verified against `huggingface_hub 1.27.0`. The CLI is `hf`; the older
+> `huggingface-cli` name still works but is deprecated, as is `hf repo`
+> (singular) in favour of `hf repos`.
+
 ## 1. Authenticate
 
 ```bash
-pip install -U "huggingface_hub[cli]"
+pip install -U huggingface_hub
 ```
 
 ```bash
@@ -23,17 +27,18 @@ Paste a token with **write** scope from <https://huggingface.co/settings/tokens>
 From the repository root, where `model/` lives:
 
 ```bash
-hf upload Nishant8677/fake-news-liar-bert ./model . --repo-type=model --create
+hf upload Nishant8677/fake-news-liar-bert ./model . --repo-type=model
 ```
 
 Uploads `model.safetensors`, `config.json`, and the tokenizer files. Large files
-go through LFS automatically. `model/` stays gitignored here — this is the only
+go through LFS automatically, and the repo is created if it does not exist —
+there is no `--create` flag. `model/` stays gitignored here; this is the only
 place the weights are published.
 
 ## 3. Create the Space and push it
 
 ```bash
-hf repo create Nishant8677/fake-news-detection-api --repo-type=space --space_sdk docker
+hf repos create Nishant8677/fake-news-detection-api --repo-type=space --space-sdk docker
 ```
 
 ```bash
