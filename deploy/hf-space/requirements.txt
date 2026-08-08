@@ -1,7 +1,5 @@
-# Pinned to the environment the benchmarks in BENCHMARK.md were measured on, so
-# the hosted demo and the published numbers describe the same stack.
-# gradio and huggingface-hub are the only additions the Space needs.
-
+# The serving stack is pinned to the environment BENCHMARK.md was measured on,
+# so the hosted demo and the published latency numbers describe the same code.
 fastapi==0.129.0
 uvicorn==0.41.0
 pydantic==2.12.5
@@ -14,5 +12,12 @@ numpy==2.4.2
 
 httpx==0.28.1
 
-gradio==5.9.1
-huggingface-hub==0.27.0
+# The UI layer is deliberately NOT pinned to an exact version.
+#
+# huggingface-hub is a transitive dependency of transformers, which requires
+# >=1.3.0,<2.0. Pinning it here to a version picked by hand produced a
+# ResolutionImpossible; the resolver should choose it, not me. gradio is left on
+# a floor for the same reason -- it pulls a large dependency tree of its own and
+# over-constraining it breaks the build without making the benchmarks any more
+# reproducible. Nothing in this section affects the measured serving path.
+gradio>=5.9
