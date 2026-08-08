@@ -71,8 +71,75 @@ The honest framing: this project is about **serving engineering** — containeri
 latency, batching, structured logging — on a model whose ceiling is set by the dataset,
 not by the training. Claiming otherwise would be worse than the 25.7%.
 
+## ONNX Runtime and int8 quantisation
+
+Produced by `scripts/export_onnx.py` and measured by `scripts/benchmark_onnx.py`;
+raw figures in `results/onnx_benchmark.json`.
+
+```bash
+python scripts/export_onnx.py
+python scripts/benchmark_onnx.py --latency-runs 200 --batch-size 32
+```
+
+Three arms, same 1,267-row test split, onnxruntime threads matched to
+`torch.get_num_threads()` (8):
+
+| Arm | p50 | p95 | p99 | rows/s | Accuracy | Size | Agrees with torch |
+|---|---|---|---|---|---|---|---|
+| torch fp32 | 180.9 ms | 236.1 ms | 259.0 ms | 8.3 | 0.2573 | 418.4 MB | — |
+| **ONNX fp32** | 161.7 ms | **215.4 ms** | 271.1 ms | 10.9 | **0.2573** | 417.9 MB | **1267/1267** |
+| ONNX int8 | 50.9 ms | **86.4 ms** | 105.8 ms | 28.2 | 0.2455 | **105.1 MB** | 728/1267 |
+
+The harness reproduces the committed 0.2573 baseline on the torch arm. A
+benchmark that cannot reproduce the number it is comparing against is measuring
+something else.
+
+### ONNX fp32 is adopted
+
+Faster on p50, p95 and throughput, at **1267/1267 identical predictions**. There
+is no trade-off to weigh: it is the same model on a better runtime.
+
+### int8 is measured and not adopted
+
+The tempting summary — "1.2 points of accuracy for 2.7× the speed" — is wrong in
+both directions.
+
+**The accuracy loss is not real.** 326 correct versus 311 on n=1267 is inside the
+sampling error of a proportion. McNemar on the paired predictions gives
+**p = 0.3807**: 135 rows torch alone got right, 120 int8 alone got right. Nearly
+symmetric. int8 cannot be called less accurate on this evidence.
+
+**But it is a different model.** Only **57.5%** of predictions are identical.
+Of the 539 that changed, 284 swapped one wrong label for a *different* wrong
+label, and the remaining 255 nearly cancel.
+
+That combination is the finding. Aggregate accuracy is preserved by coincidence
+rather than by the model behaving the same way, which is precisely what accuracy
+alone cannot show. Reporting "1.2% accuracy loss, ship it" would have deployed a
+model that answers differently on four rows in ten.
+
+So int8 is not rejected for being worse. It is not adopted because it cannot be
+shown to be equivalent, and the speed it buys is not needed — the service already
+answers in single-digit milliseconds warm, and no user perceives 236 ms → 86 ms
+on a demo.
+
+The case for it, recorded honestly: at 105 MB against 418 MB it would
+meaningfully cut cold-start time on a free host. If that ever matters more than
+prediction stability, the artifact and the measurement are both here.
+
+### A methodology note worth keeping
+
+An earlier run pinned onnxruntime to one thread while torch used eight. Under
+that handicap ONNX fp32 measured **2.9× slower** than torch, and the conclusion
+would have been "only int8 is worth it" — the opposite of the truth. The code was
+correct throughout; the experimental setup was not. Thread counts are recorded in
+the environment block of every result file for that reason.
+
 ## What is NOT claimed here
 
 - No claim that this model is accurate enough for production use.
 - The single-request throughput (117.9 req/s) and batch throughput (396.5 req/s) are
   different measurements. Cite the batch figure only when saying "batch."
+- The ONNX arms above were measured with a separate harness from the FastAPI
+  figures at the top of this file. Compare arms within a table, not across them:
+  the top section times the service, this one times the model.

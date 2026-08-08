@@ -93,7 +93,34 @@ Random chance on a balanced 6-way task is 0.167. Per-class F1 ranges from 0.19
 | Model size on disk | 418.4 MB |
 | Peak memory | 1344.3 MB |
 
-See [docs/benchmark.md](docs/benchmark.md) for details on our evaluation methodology.
+### ONNX Runtime: adopted fp32, measured and rejected int8
+
+Three arms on the same 1,267-row test split, onnxruntime threads matched to
+torch's. Raw figures in [`results/onnx_benchmark.json`](results/onnx_benchmark.json).
+
+| Arm | p95 | rows/s | Accuracy | Size | Agrees with torch |
+|---|---|---|---|---|---|
+| torch fp32 | 236.1 ms | 8.3 | 0.2573 | 418.4 MB | — |
+| **ONNX fp32** | **215.4 ms** | 10.9 | **0.2573** | 417.9 MB | **1267/1267** |
+| ONNX int8 | **86.4 ms** | 28.2 | 0.2455 | **105.1 MB** | 728/1267 |
+
+**fp32 is adopted** — faster, with byte-identical predictions on every row. No
+trade-off to weigh.
+
+**int8 is not**, and the reason is more interesting than a speed/accuracy
+trade. Its 1.2-point accuracy drop **is not statistically significant**
+(McNemar exact p = 0.3807; 135 rows torch alone got right, 120 int8 alone got
+right). It cannot be called less accurate. But only **57.5%** of its predictions
+match — 284 of the changed rows swap one wrong label for a different wrong one.
+
+Aggregate accuracy is preserved by coincidence, not because the model behaves
+the same. int8 is rejected not for being worse, but because it cannot be shown
+to be equivalent, and the speed it buys is not needed. Full reasoning, and the
+case *for* it on cold-start size, in [BENCHMARK.md](BENCHMARK.md).
+
+```bash
+python scripts/export_onnx.py && python scripts/benchmark_onnx.py
+```
 
 ## 🌐 API Deployment
 

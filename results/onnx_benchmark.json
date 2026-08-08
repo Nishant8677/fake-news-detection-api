@@ -1,0 +1,196 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-08-08T12:59:50+00:00",
+    "os": "Windows 10",
+    "python": "3.11.4",
+    "torch": "2.10.0+cpu",
+    "onnxruntime": "1.28.0",
+    "cpu_count": 12,
+    "onnx_threads": 8,
+    "torch_threads": 8,
+    "note": "onnx_threads is matched to torch_threads by default so the arms differ only in runtime and precision. Running onnxruntime at 1 thread against torch at 8 understates ONNX by roughly the thread ratio and is not a like-for-like comparison."
+  },
+  "test_set": {
+    "path": "data\\processed\\test_processed.csv",
+    "rows": 1267
+  },
+  "committed_baseline_accuracy": 0.2573,
+  "arms": {
+    "torch_fp32": {
+      "load_seconds": 0.831,
+      "rss_delta_mb": 6.6,
+      "latency_single": {
+        "p50_ms": 180.912,
+        "p95_ms": 236.124,
+        "p99_ms": 258.956,
+        "mean_ms": 185.744,
+        "min_ms": 153.858,
+        "max_ms": 423.035,
+        "n": 200
+      },
+      "throughput_batched": {
+        "batch_size": 32,
+        "rows": 1267,
+        "seconds": 153.431,
+        "rows_per_second": 8.3
+      },
+      "accuracy": {
+        "accuracy": 0.2573,
+        "n": 1267,
+        "per_class_recall": {
+          "pants-fire": {
+            "support": 92,
+            "recall": 0.3152
+          },
+          "false": {
+            "support": 249,
+            "recall": 0.257
+          },
+          "barely-true": {
+            "support": 212,
+            "recall": 0.2264
+          },
+          "half-true": {
+            "support": 265,
+            "recall": 0.3321
+          },
+          "mostly-true": {
+            "support": 241,
+            "recall": 0.1743
+          },
+          "true": {
+            "support": 208,
+            "recall": 0.2644
+          }
+        }
+      }
+    },
+    "onnx_fp32": {
+      "load_seconds": 3.126,
+      "rss_delta_mb": 444.5,
+      "latency_single": {
+        "p50_ms": 161.673,
+        "p95_ms": 215.403,
+        "p99_ms": 271.067,
+        "mean_ms": 161.067,
+        "min_ms": 109.314,
+        "max_ms": 402.401,
+        "n": 200
+      },
+      "throughput_batched": {
+        "batch_size": 32,
+        "rows": 1267,
+        "seconds": 115.863,
+        "rows_per_second": 10.9
+      },
+      "accuracy": {
+        "accuracy": 0.2573,
+        "n": 1267,
+        "per_class_recall": {
+          "pants-fire": {
+            "support": 92,
+            "recall": 0.3152
+          },
+          "false": {
+            "support": 249,
+            "recall": 0.257
+          },
+          "barely-true": {
+            "support": 212,
+            "recall": 0.2264
+          },
+          "half-true": {
+            "support": 265,
+            "recall": 0.3321
+          },
+          "mostly-true": {
+            "support": 241,
+            "recall": 0.1743
+          },
+          "true": {
+            "support": 208,
+            "recall": 0.2644
+          }
+        }
+      },
+      "agreement_with_torch": {
+        "identical_predictions": 1267,
+        "of": 1267,
+        "percent": 100.0,
+        "changed_but_both_wrong": 0,
+        "mcnemar": {
+          "torch_only_correct": 0,
+          "arm_only_correct": 0,
+          "exact_p_value": 1.0,
+          "accuracy_difference_significant": false
+        }
+      }
+    },
+    "onnx_int8": {
+      "load_seconds": 1.02,
+      "rss_delta_mb": 114.6,
+      "latency_single": {
+        "p50_ms": 50.86,
+        "p95_ms": 86.381,
+        "p99_ms": 105.747,
+        "mean_ms": 52.487,
+        "min_ms": 24.295,
+        "max_ms": 178.111,
+        "n": 200
+      },
+      "throughput_batched": {
+        "batch_size": 32,
+        "rows": 1267,
+        "seconds": 44.853,
+        "rows_per_second": 28.2
+      },
+      "accuracy": {
+        "accuracy": 0.2455,
+        "n": 1267,
+        "per_class_recall": {
+          "pants-fire": {
+            "support": 92,
+            "recall": 0.1196
+          },
+          "false": {
+            "support": 249,
+            "recall": 0.5341
+          },
+          "barely-true": {
+            "support": 212,
+            "recall": 0.1415
+          },
+          "half-true": {
+            "support": 265,
+            "recall": 0.1774
+          },
+          "mostly-true": {
+            "support": 241,
+            "recall": 0.2863
+          },
+          "true": {
+            "support": 208,
+            "recall": 0.101
+          }
+        }
+      },
+      "agreement_with_torch": {
+        "identical_predictions": 728,
+        "of": 1267,
+        "percent": 57.46,
+        "changed_but_both_wrong": 284,
+        "mcnemar": {
+          "torch_only_correct": 135,
+          "arm_only_correct": 120,
+          "exact_p_value": 0.3807,
+          "accuracy_difference_significant": false
+        }
+      }
+    }
+  },
+  "summary": {
+    "p95_speedup_int8_vs_torch": 2.73,
+    "accuracy_delta_int8_vs_torch": -0.0118,
+    "torch_reproduces_committed_baseline": true
+  }
+}

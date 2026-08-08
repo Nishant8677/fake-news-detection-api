@@ -1,0 +1,36 @@
+{
+  "opset": 17,
+  "max_length": 64,
+  "export_seconds": 7.02,
+  "quantise_seconds": 19.95,
+  "size_mb": {
+    "torch_directory": 418.36,
+    "onnx_fp32": 417.86,
+    "onnx_int8": 105.14
+  },
+  "size_reduction_vs_torch": {
+    "onnx_fp32_percent": 0.12,
+    "onnx_int8_percent": 74.87
+  },
+  "parity": {
+    "torch_predictions": [
+      4,
+      4,
+      1
+    ],
+    "onnx_fp32_predictions": [
+      4,
+      4,
+      1
+    ],
+    "onnx_int8_predictions": [
+      4,
+      5,
+      1
+    ],
+    "fp32_max_abs_logit_diff": 2.2649765014648438e-06,
+    "int8_max_abs_logit_diff": 1.9878803491592407,
+    "fp32_predictions_match_torch": true,
+    "int8_predictions_match_torch": false
+  }
+}
