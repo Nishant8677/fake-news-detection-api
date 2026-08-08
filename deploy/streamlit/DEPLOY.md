@@ -3,11 +3,28 @@
 Free, no card, no subscription — unlike Hugging Face Spaces, which now require
 PRO for anything other than a static Space.
 
-**Deploy the probe first.** This service needs 1,008 MB steady and 1,344 MB peak
-(`results/benchmark_metrics.json`). Streamlit's FAQ quotes "690MB minimum,
-2.7GBs maximum", which is a range rather than a guarantee, and the post is from
-February 2024. Our figure sits inside that range, so reading the documentation
-cannot settle it. Fifteen minutes of measurement can.
+## Measured, 8 August 2026
+
+The probe below was run rather than reasoned about. What Community Cloud
+actually gives an app:
+
+| | |
+|---|---|
+| cgroup memory limit | **3,072 MB** |
+| CPU | 16 logical / 8 physical |
+| Disk free | 110 GB |
+| Default Python | **3.14.7** |
+| Host RAM (not the limit) | 128,817 MB |
+
+Against 1,344 MB peak that leaves **1,728 MB of headroom**. It fits.
+
+Note the last two rows. The host reports 128 GB, which is irrelevant — the
+cgroup limit is what terminates an app, and it is 42× smaller. Reading
+`virtual_memory().total` would have suggested unlimited room.
+
+Streamlit's FAQ quotes "690MB minimum, 2.7GBs maximum". The real figure is
+3,072 MB, close to but not equal to the documented ceiling, which is why this
+was measured rather than assumed.
 
 ## 1. Probe the ceiling
 
@@ -44,6 +61,14 @@ Same flow, with:
 | Field | Value |
 |---|---|
 | Main file path | `deploy/streamlit/streamlit_app.py` |
+| **Python version** | **3.11** |
+
+Set the Python version deliberately. Community Cloud defaults to 3.14, and
+`BENCHMARK.md` measured 3.11.4 — the pinned stack installs on both (torch,
+numpy and pandas all ship cp314 wheels; transformers is pure Python), so this is
+about consistency rather than compatibility. The point of pinning the serving
+packages is that the deployment and the published latency figures describe the
+same environment, and the interpreter is part of that environment.
 
 Under **Advanced settings → Secrets**, paste:
 
