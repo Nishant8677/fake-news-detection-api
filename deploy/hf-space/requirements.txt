@@ -1,0 +1,18 @@
+# Pinned to the environment the benchmarks in BENCHMARK.md were measured on, so
+# the hosted demo and the published numbers describe the same stack.
+# gradio and huggingface-hub are the only additions the Space needs.
+
+fastapi==0.129.0
+uvicorn==0.41.0
+pydantic==2.12.5
+
+torch==2.10.0
+transformers==5.2.0
+
+pandas==3.0.1
+numpy==2.4.2
+
+httpx==0.28.1
+
+gradio==5.9.1
+huggingface-hub==0.27.0

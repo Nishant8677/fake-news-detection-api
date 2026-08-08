@@ -13,10 +13,18 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 # Folder with model.safetensors, config.json, tokenizer files. Read from the
 # environment so the container can point at the mounted volume; "model" is the
 # right default when running from the repo root.
+# Accepts either a local directory containing model.safetensors/config.json/
+# tokenizer files, or a Hugging Face Hub repo id -- from_pretrained resolves
+# both, which is how the hosted demo loads weights without shipping 419 MB.
 MODEL_DIR = os.getenv("MODEL_DIR", "model")
 DATASET_VERSION = "v1.0-liar"
 LOG_FILE = "logs/predictions.csv"
 CONFIDENCE_THRESHOLD = 0.4           # Lowered for 6-class problem
+
+# Prediction logging writes the submitted text to disk. That is useful locally
+# and wrong on a public deployment, where the text belongs to whoever typed it
+# and the filesystem is ephemeral anyway. Off unless explicitly enabled.
+LOG_PREDICTIONS = os.getenv("LOG_PREDICTIONS", "1") not in ("0", "false", "False", "")
 # --------------------------------------
 
 LABEL_MAP_INV = {
@@ -50,6 +58,9 @@ class NewsInput(BaseModel):
 
 # ---------------- LOGGING ----------------
 def log_prediction(text, label, confidence, needs_review, request_id):
+    if not LOG_PREDICTIONS:
+        return
+
     os.makedirs("logs", exist_ok=True)
 
     row = {
