@@ -1,5 +1,12 @@
 # Fake News Detection (6-Class LIAR Model)
 
+**[▶ Live demo](https://fake-news-detection-api-ktb2chsjvps7cqgsmknbcn.streamlit.app/)** ·
+[Model weights](https://huggingface.co/Nishant8677/fake-news-liar-bert) ·
+[Benchmarks](BENCHMARK.md)
+
+> The demo sleeps when idle. A first visit pays container start plus a 0.67 s
+> model load, so give it a moment — that is hosting, not the model.
+
 An end-to-end, production-grade Natural Language Processing (NLP) repository that explores multi-class fake news detection using transformer-based deep learning models.
 
 This repository is built with machine learning engineering best practices in mind, featuring strict data splitting, comprehensive experiment tracking, unit testing, and advanced inference benchmarking.

@@ -89,6 +89,31 @@ exists — it raises while searching for one, crashing the app on startup in
 precisely the case the guard was for. `tests/test_streamlit_app.py` pins both
 paths so it cannot come back.
 
+## Live
+
+<https://fake-news-detection-api-ktb2chsjvps7cqgsmknbcn.streamlit.app/>
+
+Running on Python 3.11.15 with weights from
+[`Nishant8677/fake-news-liar-bert`](https://huggingface.co/Nishant8677/fake-news-liar-bert).
+
+### Checking it from outside, correctly
+
+`curl` without a cookie jar returns `303` to `share.streamlit.io/-/auth/app` and
+loops until it hits the redirect cap. That is **not** a private app — it is
+Streamlit's anonymous session bootstrap, which sets a cookie and redirects back.
+A browser completes it invisibly; curl cannot unless told to keep cookies:
+
+```bash
+curl -s -L -c /tmp/j -b /tmp/j -o /dev/null -w '%{http_code}\n' https://fake-news-detection-api-ktb2chsjvps7cqgsmknbcn.streamlit.app/
+```
+
+Expect `200`. Without `-c`/`-b` this looks exactly like a permissions problem
+and will send you to change settings that were never wrong.
+
+Note also that the served HTML is a ~9 KB shell containing no app text —
+Streamlit delivers the interface over a websocket after load. Grepping the HTML
+for page content proves nothing either way.
+
 ## 3. Verify
 
 Open the URL and confirm:
